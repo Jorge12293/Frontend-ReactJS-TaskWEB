@@ -73,4 +73,6 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
 * react-router-dom@6
 * @mui/material @emotion/react @emotion/styled
 * @mui/icons-material
+* @reduxjs/toolkit react-redux
 
+* firebase
