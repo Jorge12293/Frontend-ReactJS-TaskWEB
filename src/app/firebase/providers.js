@@ -1,4 +1,4 @@
-import { GoogleAuthProvider,signInWithPopup } from "firebase/auth";
+import { GoogleAuthProvider,createUserWithEmailAndPassword,signInWithEmailAndPassword,signInWithPopup, updateProfile } from "firebase/auth";
 import { firebaseAuth } from "./config";
 
 const googleProvider = new GoogleAuthProvider();
@@ -7,17 +7,13 @@ export const singInWithGoogle = async () => {
     try{
         const result = await signInWithPopup(firebaseAuth,googleProvider);
         const {displayName,email,photoURL,uid} = result.user;
-        // const credentials = GoogleAuthProvider.credentialFromResult(result);
         return {
             ok:true,
-            // User Info
             displayName,email,photoURL,uid
         }
     } catch(error){
         const errorCode=error.code;
         const errorMessage=error.message;
-        
-        // The AuthCredential type that was used.
         const credential = GoogleAuthProvider.credentialFromError(error); 
         return {
             ok:false,
@@ -25,3 +21,49 @@ export const singInWithGoogle = async () => {
         }
     }
 }
+
+export const registerUserWithEmailPassword = async ({email,password,displayName}) => {
+    try {
+        const resp = await createUserWithEmailAndPassword(firebaseAuth,email,password);
+        const {uid,photoURL} = resp.user;
+        await updateProfile(firebaseAuth.currentUser,{displayName}); // Update DisplayName
+        return {
+            ok:true,
+            uid,
+            photoURL,
+            email,
+            displayName 
+        }
+
+    } catch (error) {
+       return {
+        ok:false,
+        errorMessage:error.message
+       } 
+    }
+}
+
+
+export const loginWithEmailPassword=async({email,password})=>{
+    try {
+        const {user} = await signInWithEmailAndPassword(firebaseAuth,email,password);
+        return {
+            ok:true,
+            uid:user.uid,
+            photoURL:user.photoURL,
+            email:user.email,
+            displayName:user.displayName 
+        }
+    } catch (error) {
+        return {
+            ok:false,
+            errorMessage:error.message
+        } 
+    }
+}
+
+export const logoutFirebase = async () => {
+    return await firebaseAuth.signOut();
+}
+
+

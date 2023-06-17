@@ -1,14 +1,29 @@
-import React from 'react';
-import {Route,Routes} from 'react-router-dom';
+import React, { useEffect } from 'react';
+import {Navigate, Route,Routes} from 'react-router-dom';
 
 import { AuthRoutes } from '../auth/routes/AuthRoutes';
 import { TaskRoutes } from '../task/routes/TaskRoutes';
+import { CheckingAuth } from '../ui/components/CheckingAuth';
+import { useCheckAuth } from '../hooks/useCheckAuth';
 
 export const AppRouter = () => {
+    
+  const {status} =useCheckAuth();
+
+  if(status === 'checking'){
+    return <CheckingAuth />
+  }
+
   return (
     <Routes>
-        <Route path='/auth/*' element={<AuthRoutes/>}/>
-        <Route path='/*' element={<TaskRoutes/>}/>
+      {
+        (status === 'authenticated')
+          ? <Route path='/*' element={<TaskRoutes/>}/>
+          : <Route path='/auth/*' element={<AuthRoutes/>}/> 
+      }
+      <Route path='/*' element={<Navigate to='/auth/login'/>}/>
+
+     
     </Routes>
   )
 }
