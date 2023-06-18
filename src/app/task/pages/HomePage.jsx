@@ -1,16 +1,29 @@
-import { AddOutlined, MailOutline } from '@mui/icons-material'
-import { IconButton, Typography, colors } from '@mui/material'
+import { AddOutlined } from '@mui/icons-material'
+import { IconButton} from '@mui/material'
 import React from 'react'
 import { TaskLayout } from '../layout/TaskLayout'
 import { NothingSelectedView } from '../views/NothingSelectedView'
 import { NoteView } from '../views/NoteView'
+import { useDispatch, useSelector } from 'react-redux'
+import { startNewNote } from '../../store/task/thunks'
 
 export const HomePage = () => {
+
+  const dispatch = useDispatch();
+  const { isSaving,active } = useSelector(state => state.task)
+
+  const onClickNewNote = () => {
+    dispatch(startNewNote());
+  }
+
   return (
     <>
       <TaskLayout>
-        <NothingSelectedView />
-        {/* <ImageGallery /> */}
+        {
+          (!!active)
+          ? <NoteView />
+          : <NothingSelectedView />
+        }
         <IconButton
           size='large'
           sx={{
@@ -22,8 +35,9 @@ export const HomePage = () => {
             bottom:50,
            
           }}
-        >
-         <AddOutlined sx={{fontSize:30}} />
+          disabled={isSaving}
+          onClick={onClickNewNote}>
+          <AddOutlined sx={{fontSize:30}} />
         </IconButton>
       </TaskLayout>
     </>
